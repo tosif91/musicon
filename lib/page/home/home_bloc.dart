@@ -4,8 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:musicon/bloc/api_bloc.dart';
 import 'package:musicon/bloc/connection_bloc.dart';
+import 'package:musicon/bloc/local_storage_bloc.dart';
 import 'package:musicon/locator.dart';
 import 'package:musicon/models/base_response.dart';
+import 'package:musicon/models/bookmark_data.dart';
 import 'package:musicon/models/chart_track_response.dart';
 import 'package:musicon/utils/constants.dart';
 import 'package:musicon/utils/routes.dart';
@@ -31,10 +33,12 @@ class HomeBloc extends BaseViewModel {
   bool isFetching = false;
   ChartName filter = ChartName.top;
   bool _isConnected = true;
-  StreamSubscription _connectionSubscription;
+  StreamSubscription
+      _connectionSubscription; // connection subscription required do not dipose
   get isConnected => _isConnected;
   int _radioGroupValue = 0;
   ConnectionBloc _connectionBloc = locator<ConnectionBloc>();
+  LocalStorageBloc _localStorageBloc = locator<LocalStorageBloc>();
   SnackbarService _snackbarService = locator<SnackbarService>();
   setFetching(bool value) {
     isFetching = value;
@@ -56,6 +60,9 @@ class HomeBloc extends BaseViewModel {
   }
 
   navigateToLyrics(TrackList data) async {
+    data.isBooked = _localStorageBloc.filterTrackHistory(
+        BookMarkData("${data.track.trackId}", data.track.trackName));
+    print('............ ${data.isBooked}');
     bool status =
         await _navigationService.navigateTo(trackInfo, arguments: data);
     if (status) {
@@ -68,33 +75,14 @@ class HomeBloc extends BaseViewModel {
     listenConnection();
     scrollListener();
     if (_isConnected) {
-      setBusy(true);
-      BaseResponse result = await fetchTracks();
-
-      if (result.data != null) {
-        print('got result is ${result.data}');
-        trackData = result.data;
-        trackList = trackData.message.body.trackList;
-      } else {
-        page = 0;
-      }
-      setBusy(false);
+      await processTracks();
     }
   }
 
   retryingFetchList() async {
     if (_isConnected) {
       page = 0;
-      setBusy(true);
-      BaseResponse result = await fetchTracks();
-
-      if (result.data != null) {
-        print('got result is ${result.data}');
-        trackData = result.data;
-        trackList = trackData.message.body.trackList;
-      } else
-        page = 0;
-      setBusy(false);
+      await processTracks();
     } else
       _snackbarService.showSnackbar(message: 'check you network connection!');
   }
@@ -102,15 +90,6 @@ class HomeBloc extends BaseViewModel {
   updateFilterRadioButton(int value, ChartName type) {
     _radioGroupValue = value;
     filter = type;
-    // notifyListeners();
-    // setBusy(true);
-    // BaseResponse result = await fetchTracks();
-    // if (result.data != null) {
-    //   trackData = result.data;
-    //   trackList.clear();
-    //   trackList = trackData.message.body.trackList;
-    // }
-    // setBusy(false);
   }
 
   showFilterChart(BuildContext context) {
@@ -182,18 +161,7 @@ class HomeBloc extends BaseViewModel {
     _navigationService.back();
 
     if (_isConnected) {
-      setBusy(true);
-      BaseResponse result = await fetchTracks();
-
-      if (result.data != null) {
-        trackData = result.data;
-        trackList.clear();
-        trackList = trackData.message.body.trackList;
-        notifyListeners();
-      } else {
-        page = 0;
-      }
-      setBusy(false);
+      await processTracks();
     } else
       _snackbarService.showSnackbar(message: 'check you network connection');
   }
@@ -202,15 +170,7 @@ class HomeBloc extends BaseViewModel {
     // setBusy(true);
     // bookedBusList.clear();
     page = 0;
-    BaseResponse result = await fetchTracks();
-    if (result.data != null) {
-      trackData = result.data;
-      trackList.clear();
-      trackList = trackData.message.body.trackList;
-      notifyListeners();
-    } else {
-      page = 0;
-    }
+    await processTracks();
     // setBusy(false);
     return true;
   }
@@ -230,14 +190,22 @@ class HomeBloc extends BaseViewModel {
           }
           setFetching(false);
         }
-
-        //TODO:call ten more booked item request;
-      }
-      if (listController.offset <= listController.position.minScrollExtent &&
-          !listController.position.outOfRange) {
-        print('reach top');
       }
     });
+  }
+
+  processTracks() async {
+    setBusy(true);
+    BaseResponse result = await fetchTracks();
+    if (result.data != null) {
+      trackData = result.data;
+      trackList.clear();
+      trackList = trackData.message.body.trackList;
+      notifyListeners();
+    } else {
+      page = 0;
+    }
+    setBusy(false);
   }
 
   Future<BaseResponse> fetchTracks() async {
@@ -251,10 +219,5 @@ class HomeBloc extends BaseViewModel {
     Response<BaseResponse> response =
         await _apiBloc.handleGet(type: FetchDataType.TRACK, parameters: params);
     return response.data;
-  }
-
-  @override
-  void dispose() {
-    _connectionSubscription.cancel();
   }
 }

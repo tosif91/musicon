@@ -18,44 +18,6 @@ class ApiBloc {
     options,
   );
 
-  // Future<Response<BaseData<dynamic>>> handlePost({
-  //   Map<String, dynamic> body,
-  //   Map<String, dynamic> parameters,
-  //   FetchDataType type,
-  // }) async {
-  //   Response<BaseData> response = Response<BaseData>();
-
-  //   try {
-  //     Map<String, dynamic> requiredData;
-  //     // = await fetchCredentials(type);
-
-  //     response = await _dio.post(
-  //       requiredData['path'],
-  //       queryParameters: parameters,
-  //       data: body,
-  //       options: Options(
-  //         headers: _dioHeader(
-  //             token:
-  //                 (requiredData['token'] != null) ? requiredData['token'] : '',
-  //             sessionID: (requiredData['sessionid'] != null)
-  //                 ? requiredData['sessionid']
-  //                 : ''),
-  //       ),
-  //     );
-  //     // print(response.runtimeType);
-  //     return response;
-  //   } catch (e) {
-  //     print(e);
-  //     print('got an error while api call');
-  //     response.data = BaseData(
-  //         success: false,
-  //         data: null,
-  //         message: _setErrorMessage(e),
-  //         statusCode: serverError(e));
-  //     return response;
-  //   }
-  // }
-
   Future<Response<BaseResponse>> handleGet({
     Map<String, dynamic> parameters,
     Map<String, dynamic> extras,
