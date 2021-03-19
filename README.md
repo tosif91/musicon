@@ -5,7 +5,11 @@ App to have millions of song albums with their lyrics and the one you love bookm
 
 1. Uses Rest Api from https://www.musixmatch.com/.
 2. Infinite Pagination for your Tracks list.
-![til](Infinite_Pagination.gif)
+
+
+![](album info.gif)
+
+
 4. Filter Tracks according to your choice.
 5. Have the lyrics of tracks which you want.
 6. Hive a noSQL database to store your bookmarks tracks locally on your phone.
