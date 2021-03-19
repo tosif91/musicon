@@ -7,7 +7,7 @@ App to have millions of song albums with their lyrics and the one you love bookm
 2. Infinite Pagination for your Tracks list.
 
 
-![](album_info.gif)
+![Alt text](album_info.gif)
 
 
 4. Filter Tracks according to your choice.
