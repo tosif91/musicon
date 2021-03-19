@@ -23,7 +23,7 @@ class BookMarkPage extends StatelessWidget {
               : Container(
                   child: (model.bookLength == 0)
                       ? Center(
-                          child: Text('no data in TrackBook'),
+                          child: Text('no saved TrackBook!',style: TextStyle(fontSize: 25),),
                         )
                       : ListView.builder(
                           itemCount: model.bookLength,
