@@ -21,3 +21,5 @@ App to have millions of song albums with their lyrics and the one you love bookm
 <img src="local_backup.gif" width="200">
 
 6. Sense your network connection to get you notified , when theirs no network connection.
+
+<img src="network.gif" width="200">
