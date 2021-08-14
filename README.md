@@ -1,6 +1,7 @@
 # musicon
 App to have millions of song albums with their lyrics and the one you love bookmark those.
 
+#NOTE: Get api key from [MusixMatch]( https://api.musixmatch.com) and add this key in [constant.dart](https://github.com/tosif91/musicon/blob/master/lib/utils/constants.dart)
 # Features
 
 1. Uses Rest Api from https://www.musixmatch.com/.
